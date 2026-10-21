@@ -1,0 +1,199 @@
+AVERA — PRODUCT REFERENCE FOR THE WEBSITE / DEMO
+Acquisition · Valuation · Earn-out & Repayment Analytics
+Powered by Unija ETL · www.avera-etl.com
+Reference build: v24 (21 Oct 2026). This document describes the complete application — every screen, every field and the calculation rules — plus a fictional demo deal with its real computed figures, so a read-only demo can be built without the source file. Keep the demo fictional and read-only.
+
+====================================================================
+1. WHAT AVERA IS
+====================================================================
+AVERA is a single-page web application for analysts of an accounting-services group (Unija ETL / ETL Global network) who buy accounting, payroll and tax-advisory firms. It replaces a complex Excel valuation model. The analyst drops the target's documents (Excel statements, CSV, PDF/DOCX term sheets, LOIs, e-mails, the company website) into the app; the app reads them, builds the P&L on a standard chart of accounts, normalises EBITDA, computes the price the deal can repay out of its own cash flow, models the acquisition loan (ETL intercompany loan rules), earn-out, put/call option, exit, working-capital price adjustment, four scenarios, taxes by jurisdiction — and renders a 5-page Investment Board paper with a signature page. Exports: JSON (save deal), Excel, PowerPoint, PDF.
+
+Principles the app states everywhere:
+- Nothing is applied on its own: every import and every term read out of a document is shown for confirmation first.
+- A figure a document does not state is never invented — the field stays empty, never 0.
+- Every figure in the report must have a source (register of sources).
+- Files are parsed in the browser and never sent anywhere.
+- Bilingual UI: Slovenian (default) and English, switch SL/EN in the header. Brand text (AVERA, the tagline, "Powered by Unija ETL") is always English.
+- Projection after the last planned year is flat (same level as the last plan year) unless growth is solved/entered.
+- Where a revenue multiple is shown, the app also says how many months of revenue it equals (annual revenue / 12).
+
+====================================================================
+2. VISUAL DESIGN
+====================================================================
+Palette (from etl-global.com): ETL signature red #DA291C (accents, active nav, primary button, section rules); text #212121, secondary text #666666; grounds white and #F4F4F4; thin grey rules. Clean, professional, Big4 feel.
+Typography: Roboto (400/500/700) for UI and headings, Roboto Mono for the build stamp and numbers where tabular, Open Sans allowed for body. Uppercase letter-spaced small labels (e.g. "DATA IN", "MODEL") in red/grey above each title.
+Logo: a pointed capital "A" built from two planes in ETL reds (#DA291C and a lighter tint #F5B3AB), with the crossbar pulled out to the right. Wordmark "AVERA" letter-spaced, tagline below: "ACQUISITION · VALUATION · EARN-OUT · REPAYMENT", under it a red dash and "POWERED BY UNIJA ETL ▪ AVERA-ETL.COM".
+Layout: sticky white top bar (logo block | deal name editable input | buttons: New deal, Open, Save, Excel, PowerPoint, PDF (red primary), SL/EN segment, build stamp "2026-10-21 12:00 · v24"). Below: 210 px left sidebar nav (grouped, numbered 1–16, active item red with red left bar) + main content column (max ~1010 px). Content is built of white "cards" with a title and thin red underline, hint paragraphs in grey, tables with uppercase grey header row, KPI tiles (big number, small caption). Toasts bottom-right; confirm dialogs are in-page overlays.
+Responsive: at narrow widths the sidebar collapses above the content.
+
+====================================================================
+3. NAVIGATION (16 screens, 5 groups)
+====================================================================
+DATA IN
+ 1 Documents and sources (Dokumenti in viri)
+DEAL
+ 2 Assumptions (Predpostavke)
+INPUTS
+ 3 Company and report (Podjetje in poročilo)
+ 4 Revenue by client (Prihodki po strankah)
+ 5 Employees (Zaposleni)
+ 6 Interim and eliminations (Medletno in eliminacije)
+ 7 Preliminary questions (Preliminarna vprašanja)
+REPORT
+ 8 Summary Report (includes the dashboard and cover)
+MODEL
+ 9 Budget — P&L (Budget — izkaz)
+ 10 Scenarios by year (Scenariji po letih) — sub-tabs Baseline / Pessimistic / Neutral / Optimistic
+ 11 Deal structure (Struktura posla)
+ 12 Loan and bullet (Kredit in bullet)
+ 13 Earn-out
+ 14 Exit — Put option (Izstop — put opcija)
+ 15 Growth (Rast)
+WORKING CAPITAL
+ 16 Working capital (Obratni kapital)
+
+====================================================================
+4. SCREEN BY SCREEN
+====================================================================
+
+--- 1. DOCUMENTS AND SOURCES ---
+Intro: "Everything that brings data into the deal: statements and workbooks, agreements and term sheets, the company website, and the register of sources."
+Card "Load documents": large dashed drop zone "Drop documents here — Statements: XLSX, XLSM, CSV — parsed in your browser. Deal terms: DOCX, PDF or text (an LOI, term sheet or mail). Or a saved deal (.json). or click to choose". Status line: "Nothing in the deal yet. Load documents into the box above; the app reads them itself." List of loaded documents (name, kind, date, note).
+Card "What the app can read" (table KIND / FILES / WHAT HAPPENS):
+ - Whatever you load, any shape: rules try known shapes first; what they cannot resolve (information memorandum, a plan in any layout, an e-mail with figures, a customer ledger) is read by AI, checked against the totals the document states; what agrees is entered automatically, what does not waits beside it with the quote for confirmation.
+ - Statements and workbooks, XLSX/XLSM/CSV: finds year columns, scores blocks, takes the one that is a statement, says which and why; totals checked, unmapped rows named.
+ - Deal terms, DOCX/PDF/TXT/MD/RTF/EML: stake, multiple, put option, interest rate read out of LOI/term sheet/agreement/mail and shown with the quote; confirm each.
+ - A saved deal, JSON.
+Card "How to read this deal's documents": free-text instructions sent to the document reader with every file (e.g. which source prevails).
+Card "The company website": URL field + "Read the website" button; text copied into the company description; no figures taken from a website.
+Card "Register of sources": table DOCUMENT / LOCATION / METHOD (import, manual, web, derived) with add/remove. Note "Still missing: working capital."
+
+--- 2. ASSUMPTIONS ---
+Card "Assumptions" (two-column form): Interest (%) [default market rate 6.26 %]; Share (%) acquired; Tax jurisdiction (hand-keyed rate / Slovenia / Croatia / Serbia / Bosnia and Herzegovina / North Macedonia / Montenegro); Price basis (proposed valuation — months of revenue | multiple on EBITDA); Proposed valuation (€) — "entered for each deal — it is a judgement, not a formula"; Aid: months of revenue (eight is a common opening measure); Corporate tax (%) with rule text; Withholding jurisdiction (from company country; Slovenia, Croatia, Croatia with bank guarantee, Bulgaria, Serbia, BiH Federation / Republika Srpska / Brčko, Montenegro, North Macedonia); Bank guarantee (HR) toggle; Dividend tax (%) with rule text; Annuity (years) [6]; Expected closing date; Principal moratorium (months from closing) [12].
+Table "Tax rate by year" (YEAR / REVENUE / RATE / TAX) and "Dividend withholding by year" (YEAR / PAID date 30 June next year / HOLDING PERIOD / RATE / BUYER'S PROFIT / WITHHOLDING, total).
+Card "Price and total investment": table BASIS / PRICE (before costs) / WITH TRANSACTION COSTS / MULTIPLE ON EBITDA with rows Proposed valuation, Self-financing price, In force in the model, Transaction costs; button "Take the proposed valuation as the price". Tranche table (TRANCHE / % / AMOUNT / DRAWDOWN / MORATORIUM LEFT) with quick splits 60/20/20, 50/25/25, 70/30, 100 %; note on client concentration.
+Card "Price and transaction costs": Entered price, Use the entered price (toggle), Multiple, Base (single year / average of years / entered amount), Year; transaction costs Legal, Due diligence, Notary, Other — financed by the loan.
+Card "Which price repays itself": workbook formula (even annual cash) vs the actual repayment schedule, and the difference.
+Card "Model": comparison table BASELINE / PESSIMISTIC / NEUTRAL / OPTIMISTIC — Repayment capacity (with costs), Optimal price (net of costs), Price, Total investment, Revenue change year 1, Growth, Average revenue, expenses, EBITDA, EBITDA margin, Profit ETL, Purchase price loan payments, Interest payments, Liquidity after 6 years.
+
+--- 3. COMPANY AND REPORT ---
+Card "Company": Name, Legal form, Country of the acquisition, City, Address, Activity, Registration number, VAT number, Founded (year), Managing director, Website.
+Card "Company narrative for the report": What the company does; History and milestones; Services and offering; Market and position; button "Draft from the data loaded" produces an automatic draft composed only of figures the model holds (headcount, clients, revenue, EBITDA, concentration, price) with button "Take the draft into the fields".
+Card "Sign-off": Analyst, Approved by, Version, Final version date, Approval date, Report language (Slovensko / English), Investment Board members — signatories (one per line: name, role).
+Card "Risk assessment and AI opinion": a mini AI agent receives every figure of the model (no documents) and returns verdict, strengths, risks, structure, conditions; saved with the deal and printed before the board resolution; API key + model fields (local only); button "Prepare the AI opinion".
+Card "Ownership": Before the transaction (HOLDER / %), After the transaction (HOLDER / %), totals 100 %.
+Register of sources (same as screen 1).
+
+--- 4. REVENUE BY CLIENT ---
+KPI tiles: ACTIVE CLIENTS (83, 2025) · REVENUE ON THE LIST (618,913 €) · TOP 5 (32.2 % — "above 30 % — concentrated") · TOP 10 (44.9 %) · AVERAGE PER CLIENT (7,457 €) · REVENUE PER HOUR (78 €, 662.7 h/month).
+Table "Revenue by client": NO. / MONTHLY / ANNUAL REPORT / TOTAL / SHARE / HOURS PER MONTH / DOCUMENTS PER MONTH / PAYSLIPS / REVENUE PER HOUR; clients are numbered, not named; rows Entered and Workbook total; + Add.
+Table "Next year revenue plan": FIGURE / 2025 / PLAN / CHANGE — Clients 83→64 (−22.9 %), Revenue 618,913→413,723 € (−33.2 %), Hours per month 662.7→439.5, Documents per month 21,264→15,338, Payslips 289→207.
+
+--- 5. EMPLOYEES ---
+Table (no names): # / BORN / EDUCATION / POSITION / DEPARTMENT (Accounting, Payroll, Advisory, Back office) / WITH THE COMPANY SINCE / FULLY LOADED MONTHLY / ADDITIONAL COST / ANNUAL COST / NOTE; total row "5 people · 19,168 € · 1,285 € · 277,736 €". Staff note text.
+Table "By department": DEPARTMENT / HEADCOUNT / LABOUR COST / PER HEAD / SHARE OF COST (empty departments stay blank — never 0).
+Card "Productivity": Revenue per employee 90,000 €; EBITDA per employee 18,117 €; Personnel cost as % of revenue 61.3 %; Average labour cost per head 55,155 €; Labour cost from the employee list 277,736 €; Difference against the P&L −1,962 €.
+
+--- 6. INTERIM AND ELIMINATIONS ---
+Table "Result as at 2026-05-31": ENTITY / REVENUE / EXPENSES GROSS / EXPENSES AFTER ELIMINATION / RESULT / ANNUALISED / IN THE DEAL (three entities; total revenue 213,827 €, result 86,416 €, annualised 513,184 €). Fields As at, Months.
+Table "Intragroup eliminations": FROM / TO / KIND / AMOUNT / ANNUALISED (total 85,761 € → 205,826 €). Note: "The target booked 5 months of revenue of 192,518 €, which annualises to 462,044 € against 450,000 € in the plan."
+
+--- 7. PRELIMINARY QUESTIONS ---
+Checklist to the seller in five groups (QUESTION / RECEIVED checkbox / ANSWER): 1) Historical financials (3-year P&L, BS, CF; CAPEX itemised) 2) Corporate structure (group structure, minority arrangements, presentation, headcount org chart) 3) People and organisation 4) Sales and marketing 5) Technology (cloud software, SaaS, IT team, ERP). Counter "Received 4/14 answers".
+Card "Methodology and departures from the workbook" — table POINT / WHAT THE APP DOES (see section 5 below; shown in-app verbatim).
+
+--- 8. SUMMARY REPORT (5 pages, A4, printable) ---
+Buttons: "Edit the report inputs", "PDF for signature".
+Page 1 — header strip "AVERA · INVESTMENT COMMITTEE PAPER — POWERED BY UNIJA ETL"; company name; activity · address · website; KPI row: TRANSACTION (Share purchase 100.0 %), PRICE, 100 % VALUE, EBITDA MULTIPLE — PLAN (4.69× (2026)), REVENUE MULTIPLE (0.94× = 11.3 months of revenue), CLOSING, COUNTRY, ANALYST, APPROVED BY, VERSION, DATE, AVERA BUILD. "The business" narrative (4 paragraphs). Facts table: Founded, Legal form, Registered address, Registered office, Registration number, VAT number, Headcount, Clients. "Executive summary" (auto-written, 5 paragraphs). "The seller's figures, year by year" (Revenue, Normalised EBITDA, Margin for 2024A/2025A/2026P). "Key figures". Footer "AVERA www.avera-etl.com · Powered by Unija ETL · page 1/5".
+Page 2 — "Deal at a glance" KPI tiles: PRICE, EBITDA MULTIPLE — PLAN, REVENUE MULTIPLE, OPTIMAL PRICE (NET OF COSTS), REPAYMENT CAPACITY (WITH COSTS), ETL VS UNIJA DIFFERENCE, LIQUIDITY AFTER 6 YEARS, BULLET, BASELINE GROWTH; earn-out sentence; concentration warning; charts Revenue and EBITDA (bars by year) and Liquidity after 6 years; "The multiple by plan year" table (YEAR / BASIS / REVENUE / EBITDA / MARGIN / EBITDA MULTIPLE / ON REVENUE / MONTHS OF REVENUE); "The business in figures".
+Page 3 — "Price and financing structure" (tranches, transaction costs, working capital adjustment, total financing) with earn-out explanation; "Cash flow and repayment" table by year (EBITDA / CASH / DISTRIBUTABLE CASH FLOW / INTEREST / PRINCIPAL / CLOSING LIQUIDITY, total); "Scenarios" table; "Tax framework" (corporate tax by year, withholding by year).
+Page 4 — "EBITDA normalisations" (LABEL / BY / TYPE / per year / STATUS); "Risks and conditions" bullet list (bullet, growth required, concentration, buyer normalisations, outstanding questions); "Sources"; "Ownership" before/after.
+Page 5 — "Resolution of the Investment Board": subject, purchase price, basis, payment, financing, prepared by; tick boxes Approved / Approved with conditions / Rejected; Conditions and remarks; signature table NAME / ROLE / DATE / SIGNATURE (4 lines).
+
+--- 9. BUDGET — P&L ---
+Standard chart of accounts, fixed and translated. Columns: years (ACTUAL / PLAN). Lines: TOTAL REVENUE (Revenue — accounting and payroll); Total personnel costs (100 Employee benefits, 101 Other employee costs); Total operating costs (102 Training, 110 Rent, 120 Marketing, 130 IT costs, 140 General costs, 161 Investments, 190 Other costs, 200 Extraordinary non-recurring costs); 160 Depreciation; TOTAL COSTS; EBITDA AS ENTERED; Normalisations — seller; Normalisations — buyer; NORMALISED EBITDA; Margin; EBIT; Corporate tax; Net profit; Cash. Buttons "+ line from the chart of accounts", "+ year".
+Card "Baseline after the last planned year": growth for self-financing (solved) | flat — no growth | entered rate; Projection length (years). Text: "Solved: at 3.72 % growth a year in revenue and costs the loan clears within the term out of cash flow, with no bullet."
+Card "Bridge: as booked → Unija (P&L input)": per year BOOKED / UNIJA / DIFF per line; Effect on EBITDA; Explained by normalisations; Unexplained (warning if ≠ 0).
+Card "Years": YEAR / TYPE (actual, plan).
+Card "EBITDA normalisations": LABEL / BY (seller, buyer) / STATUS (already applied in the P&L | apply (in the model) | off; "recurs" flag) / amount per year / SOURCE; presets "+ Director EUR 60,000", "+ Cash gross-up", "+ Blank". A negative value lowers EBITDA (cost added), positive raises it.
+
+--- 10. SCENARIOS BY YEAR ---
+Segment Baseline / Pessimistic / Neutral / Optimistic. Full statement by year (2026…2032, TOTAL, AVERAGE): TOTAL REVENUE, Total personnel costs, Total operating costs, TOTAL COSTS, EBITDA AS ENTERED, Normalisations seller/buyer, NORMALISED EBITDA, Margin, 160 Depreciation, EBIT, Corporate tax, Net profit, Depreciation add-back, Cash, Ownership share of the year, Profits to buyer, Profits to seller, Withholding rate, Dividend tax, Buyer profits after dividend tax, − Loan principal, − Loan interest, Total liquidity, Opening liquidity, Closing liquidity. KPI tiles: REPAYMENT CAPACITY (WITH COSTS), OPTIMAL PRICE (NET OF COSTS), PRICE, TOTAL INVESTMENT, DIFFERENCE, LIQUIDITY AFTER 6 YEARS, AVERAGE EBITDA, EBITDA MULTIPLE. Table "Scenario rates": SCENARIO / SOURCE / GROWTH / REVENUE SHOCK YEAR 1 (Baseline: growth for self-financing; Pessimistic: inflation 3.00 %, −10 %; Neutral: GDP growth 7.00 %, 0 %; Optimistic: ETL growth 10.70 %, +10 %).
+
+--- 11. DEAL STRUCTURE ---
+Table "Transaction structure": BASE (EBITDA 2026/2027/2028) / EBITDA / EBITDA MULTIPLE / REVENUE MULTIPLE / 100 % VALUE / PRICE FOR THE STAKE.
+Card "Preferred (minimum) dividend": toggle "The buyer has a guaranteed minimum"; Minimum amount per year; How many years; button "Set to stake × cash flow 2026"; example table CASH FLOW / BUYER / SELLER.
+Card "Planned capital expenditure": toggle; % of revenue for years without amount; table YEAR / AMOUNT ENTERED / APPLIED / CASH AFTER INVESTMENT.
+Card "Payment structure": PAYMENT / % / AMOUNT / TIMING (instalments, transaction costs, working capital adjustment, total investment).
+Card "Repayment comparison": VARIANT / CUMULATIVE LIQUIDITY / TERM — "FCF — annuity" vs "FCF — cash-flow driven with a bullet".
+
+--- 12. LOAN AND BULLET ---
+Card "Loan terms": Repayment mode (per the loan agreement (annuity) | out of the cash flow only — the self-financing test); Interest rate (%); Term (years); Payment dates (31 May and 30 November | monthly as in the workbook); Principal repayment (equal principal instalments | annuity); Interest basis (actual/360 | actual/365 | effective annual rate); First principal instalment (the first date after 12 months | next year: Nov if drawn after Nov, else May).
+KPI tiles: LOAN AMOUNT, TOTAL REPAID, LIQUIDITY AFTER 6 YEARS, BULLET, EXTRA TIME FOR THE BULLET (months), GROWTH REQUIRED.
+Chart "Principal and interest by year" (stacked bars). Table "Repayment schedule by year" (DISTRIBUTABLE CASH FLOW / INTEREST / PRINCIPAL / TOTAL / LIQUIDITY IN THE YEAR / CLOSING LIQUIDITY). Per tranche: "Repayment schedule by date" (PAYMENT DATE / BALANCE BEFORE / INTEREST / PRINCIPAL ("moratorium" during grace) / INSTALMENT / BALANCE AFTER, totals). Table "Loans by tranche": LOAN / AMOUNT / PERIODS / GRACE / MONTHLY INSTALMENT / ANNUITY (YEARS). Table "Growth required — x % p.a.": YEAR / REVENUE / VS PLAN / EBITDA / VS PLAN.
+
+--- 13. EARN-OUT ---
+Notice: "The payment is split into 3 instalments, so every instalment after the first is an earn-out — conditional on the EBITDA plan being delivered. This is not a setting: a split payment is an earn-out."
+Card "How the earn-out is computed": Take the structure (from the split of the payment | entered by hand); Target (share of baseline; 1 = the plan); Malus threshold (share of baseline; 0 = none); Slope multiplier (from the price = price / baseline EBITDA | entered by hand); toggle "Above plan the payout is capped at the instalment".
+Table "Read from the tranches": PAYMENT / SHARE OF THE PRICE / AMOUNT / CONDITION. Table "Instalments and thresholds": PERIOD / YEAR / BASELINE EBITDA / TARGET / MALUS THRESHOLD / EBITDA AT NIL PAYOUT / INSTALMENT. Table "Bonus / malus by scenario": Pessimistic (−15 %), Base (target), Optimistic (+15 %) → payouts, total price, % of max. "Earn-out table — period n": PLAN ACHIEVED / EBITDA / SHORTFALL / PAYOUT / % OF INSTALMENT / FIXED + THIS INSTALMENT (from 100 % down to the point where the instalment is wholly lost). Cards "If the plan is delivered" (max price, effective multiple) and "If the earn-out is missed" (floor price, multiple).
+
+--- 14. EXIT — PUT OPTION ---
+Card "Option terms": toggle The deal has an option; Kind (put — the seller can make us buy | call — we have the right to buy); Further stake covered (%); Exercisable from / until; Assumed exercise year; toggle Model the exercise.
+Card "Price and financing": How the price is set (multiple × base | a fixed amount); Multiple; Base (EBITDA | revenue); Base year; Financing (a new loan | out of accumulated liquidity); Term and rate of the second loan.
+Card "Exit assumption": toggle Include an exit; Year; Exit multiple; applies to (normalised EBITDA | revenue); Costs of selling (%). With exit on: value at exit, proceeds, deal IRR and equity IRR (equity IRR shown only when ETL actually commits equity).
+
+--- 15. GROWTH ---
+Table FIGURE / SOURCE / 2024…2029 / AVERAGE: Inflation rate (avg 3.32 %), GDP growth (avg 7.32 %), ETL growth (12.5, 10.8, 10.7 … avg 11.02 %); ETL premium over inflation; which figure of the row is used (one year | average); Year.
+Table "Rates by scenario": SCENARIO / RATE TAKEN FROM (Inflation | GDP growth | ETL growth | entered by hand) / BY HAND / RATE USED / REVENUE SHOCK YEAR 1. Growth is maintained here and nowhere else.
+
+--- 16. WORKING CAPITAL (Tiko Pro methodology) ---
+Card "Period": First month, Last month, Closing month, Target average — months (12), Measure (Net working capital excl. deferred income | Net working capital | Working capital (inventory + receivables − payables)); buttons Create the months, Set the target window, + entity for minimum cash. Months entered as 2026-04; posting journals pasted or balances keyed in; monthly table of fixed WC lines; DSO/DIO/DPO.
+Card "Settling the working capital surplus with the seller": toggle; surplus taken from the calculation | negotiated; Repaid at once after drawdown; Note. Table HOW THE SETTLEMENT IS ARRIVED AT / AMOUNT (surplus at closing × stake = paid to the seller; price for the stake; total to the seller; total financing).
+Card "How it is computed": Net working capital; Working capital; Net working capital excl. deferred income (default measure); DSO/DIO/DPO = receivables / monthly revenue × 30 etc.; Targeted working capital = average over the target window ending with the closing month; Minimum cash = period costs / months × months required, averaged; Price adjustment = (WC at closing − target) + cash − minimum cash + adjustments (debt, loans given, old receivables, unearned advances, IT).
+
+====================================================================
+5. CALCULATION RULES (shown in-app under "Methodology")
+====================================================================
+- Normalisations are not counted twice: adjustments already inside the "UNIJA (P&L input)" columns are flagged, shown in the booked → Unija bridge, and not deducted again.
+- Revenue and costs grow together at the same rate, so the margin stays constant (the old workbook grew only EBITDA).
+- Interest rate defaults to the current market rate (6.26 %); it is an input.
+- Tax on a loss: no negative tax by default (switch to match the workbook).
+- Every deal carries the bullet mechanics: even when the loan clears within the term, the app runs the cash-flow variant, the bullet amount and the extra months needed.
+- Preferred dividend is an amount, not a percentage (60 % stake, profit 100 → buyer 60, seller 40; profit 80 → buyer still 60, seller 20); runs for the years entered.
+- CapEx reduces cash before the ownership split.
+- Repayment as the ETL intercompany agreement writes it: twice a year on 31 May and 30 November, interest on actual days / 360 from the first payment date after drawdown (also through the moratorium), principal in equal instalments, 12 months moratorium on principal from closing. Monthly amortisation kept only for comparison.
+- Corporate tax from the jurisdiction, year by year: Croatia 10 % below EUR 1,000,000 revenue else 18 %; Slovenia 22 % (held for every year, conservative); Serbia 15 %; North Macedonia off revenue; Montenegro off profit; BiH by entity.
+- Dividend withholding falls with the holding period (Parent–Subsidiary Directive / treaties): e.g. Croatia 24 months (or at once with a bank guarantee, otherwise 5 % for two years), Serbia 12 months, none in Slovenia and Bulgaria. Profit of a year is paid 30 June of the following year, so the rate is read at that date.
+- Buying less than 100 %: revenue multiple is read on the 100 % value; EBITDA multiple is entered on a 100 % basis; seller's share of each year's profit shown throughout.
+- The option over the rest is a second purchase: costs money in the exercise year, raises the buyer's share from then on, funded by a new loan or liquidity.
+- Exit: two returns — deal IRR and equity IRR; the app never shows a zero equity IRR when there is no equity.
+- Required growth instead of DSCR: the app answers "what annual growth (in % and €) would be needed for the bullet to disappear".
+- Baseline scenario after the last plan year: growth solved so the deal exactly finances itself (surpluses of earlier years accumulate and cover later shortfalls).
+- Self-financing price = price the cash flow repays within the term; optimal price net of costs = that minus transaction costs (financed by the same loan).
+
+====================================================================
+6. THE DEMO DEAL (fictional) — computed figures
+====================================================================
+Company: Jadran Knjigovodstvo d.o.o. (demo), Zadar, Croatia (d.o.o.), Obala 1, 23000 Zadar, jadran-demo.example. Activity: accounting, payroll and business advisory for SMEs. Registered 2024, trading 19 years (owner started as a sole trader). 5 employees (4 accounting, 1 payroll), 83 clients, Top 5 32.2 %, Top 10 44.9 %, average revenue per client 7,457 €, 662.7 hours/month, revenue per hour 78 €. Owner before: a private individual 100 %; after: Unija ETL Holding International d.o.o. 100 %. Analyst "Analitik (demo)", version demo, date 2026-09-03.
+Narrative (report): digitalised accounting and business advisory firm for SMEs, recurring revenue; core services accounting, payroll/HR, admin, tax and financial reporting; cloud accounting (Minimax); packages Basic / Premium / Premium Plus; new business organic via referrals, turns away 15–20 enquiries a quarter; office ~165 m², eleven workstations.
+
+P&L (EUR): 2024A revenue 504,523 / personnel 255,534 / operating 198,512 / depreciation 8,243 / EBITDA as entered 50,477 / seller normalisation +8,000 / normalised EBITDA 58,477 (11.6 %). 2025A revenue 618,944 / personnel 284,643 / operating 178,088 / depreciation 7,814 / normalised EBITDA 156,213 (25.2 %). 2026P revenue 450,000 (seller planned 423,200; Unija plan 450,000) / personnel 275,774 / operating 83,641 / depreciation 5,700 / normalised EBITDA 90,585 (20.1 %) / EBIT 84,885 / tax 8,489 / net profit 76,397 / cash 82,097.
+Normalisations: Owner discretionary (private) costs removed — seller, recurring, 7,000 / 15,746 / 4,655, already in the P&L; Owner salary invoiced from the proprietorship charged as personnel cost — buyer, recurring, −50,000 (2025, 2026), already in the P&L; Non-recurring costs 2024 (account 200) added back — seller, one-off, +8,000, deducted in the model; Market-rate director salary — buyer, −60,000 / −50,000 / −50,000, not applied.
+Deal: purchase of 100 % at 425,000 € (entered price) = 4.69× normalised EBITDA 2026 = 0.94× revenue = 11.3 months of revenue. Transaction costs 20,000 € (legal, DD, notary). Total investment / loan 445,000 € over 6 years at 6.26 %, closing 2026-08-01, moratorium 12 months. Tranches: 1st 60 % 255,000 € at signing; 2nd 20 % 85,000 € after FY1 (earn-out: EBITDA 2026 ≥ 90,585 €); 3rd 20 % 85,000 € after FY2 (earn-out: EBITDA 2027 ≥ 93,955 €). Conditional part 170,000 € (40 %); floor price if earn-out missed 255,000 € = 2.82×. Earn-out slope 4.6917 € per euro of EBITDA short; instalment wholly lost at 72,468 € (2026) / 75,838 € (2027). Scenario payouts: Pessimistic (−15 %) 21,250 + 18,879 = 40,129 → total price 295,129 € (69.4 %); Base and Optimistic 170,000 → 425,000 €.
+Repayment capacity (with costs) 451,758 €; optimal price net of costs 431,758 €; headroom over entered price 6,758 €; self-financing price on the actual schedule 438,423 € (458,423 € with costs). Baseline growth solved 3.72 % p.a. Liquidity after 6 years 11,560 €; bullet 0 €; extra time 0 months. Total repaid 534,517 € (principal 445,000 + interest 89,517). Withholding total −5,967 € (5 % in 2026 and 2027, 0 % from 2028).
+Baseline by year (revenue / normalised EBITDA / cash / distributable to buyer after withholding / interest / principal / closing liquidity): 2026 450,000 / 90,585 / 82,097 / 32,497 / 5,786 / 0 / 26,710 · 2027 466,740 / 93,955 / 85,129 / 80,873 / 20,144 / 36,000 / 51,439 · 2028 484,103 / 97,450 / 88,275 / 88,275 / 22,165 / 82,625 / 34,924 · 2029 502,111 / 101,075 / 91,538 / 91,538 / 19,231 / 93,250 / 13,980 · 2030 520,790 / 104,835 / 94,922 / 94,922 / 13,313 / 93,250 / 2,339 · 2031 540,163 / 108,735 / 98,431 / 98,431 / 7,394 / 93,250 / 127 · 2032 560,257 / 112,780 / 102,072 / 59,542 / 1,484 / 46,625 / 11,560. Ownership share of year: 41.7 % in 2026 (closing 1 Aug), 100 % 2027–2031, 58.3 % in 2032.
+Scenarios (growth / average revenue / average EBITDA / optimal price net / repayment capacity / liquidity after 6 years): Baseline 3.72 % / 503,452 / 101,345 / 431,758 / 451,758 / 11,560 · Pessimistic 3.00 % with −10 % shock / 443,328 / 49,899 / 203,723 / 223,723 / −264,084 · Neutral 7.00 % / 556,330 / 111,989 / 479,938 / 499,938 / 69,799 · Optimistic 10.70 % with +10 % shock / 685,465 / 187,755 / 817,364 / 837,364 / 477,673.
+Multiple by plan year: 2026 4.69× / 0.94× / 11.3 months; 2027 projection 4.52× / 0.91× / 10.9; 2028 4.36× / 0.88× / 10.5.
+Loan schedule tranche 1 (275,000 € = 255,000 + 20,000 costs): 30.11.2026 interest 5,786 (moratorium); 31.5.2027 8,703 (moratorium); then 10 principal instalments of 27,500 € from 30.11.2027 to 31.5.2032 with interest 8,751 → 875; total interest 62,548. Tranche 2 (85,000 €): 10 instalments of 8,500 € from 30.11.2027, interest 14,840. Tranche 3 (85,000 €): 8 instalments of 10,625 € from 30.11.2028, interest 12,129.
+Interim as at 2026-05-31 (5 months): target revenue 192,518 € → annualised 462,044 € vs plan 450,000; group result 86,416 €, annualised 513,184 €; eliminations 85,761 € (annualised 205,826 €).
+Next-year plan on the client list: 64 clients, 413,723 € (the Unija plan nevertheless uses 450,000 €).
+Working capital: no data in the demo — adjustment shown as "no data yet"; settlement switched off.
+Put option: none switched on. Exit: switched off.
+Preliminary questions: 4 of 14 answered; outstanding e.g. CAPEX itemised, minority arrangements, org charts.
+Risks and conditions printed: No bullet; Growth required 3.72 %; Client concentration Top 5 32.2 %; buyer normalisations (owner salary, director salary); outstanding questions.
+
+====================================================================
+7. EXPORTS AND DEMO BEHAVIOUR
+====================================================================
+Buttons in the header: New deal (confirm dialog, starts an empty deal — the app opens empty, no sample data), Open (.json), Save (.json), Excel (full model workbook), PowerPoint (deck), PDF (prints the 5-page report with the signature page). For the public demo: all inputs read-only, header action buttons hidden or disabled, the demo deal above pre-loaded, both languages available, nothing stored in the browser.
+Target users and business model: analysts and partners in the ETL / Unija network; AVERA is to be offered on www.avera-etl.com as a subscription (monthly or annual, card payment) with licences for ETL member firms.
